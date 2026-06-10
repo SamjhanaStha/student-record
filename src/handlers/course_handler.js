@@ -47,9 +47,15 @@ let FindCourseById = async(req, res) =>{
 }
 let CreateCourse = async(req, res) =>{
     try{
-        let data= req.body
+        let {name, credit, teacherId}= req.body
         let createCourse = await prisma.course.create({
-            data: data
+            data: {
+                name, 
+                credit, 
+                teacher: {connect:{
+                    id: teacherId
+                }}
+            }
         })
         res.status(201).json({
             message:"course created successfully"

@@ -9,10 +9,10 @@ dotenv.config()
 let app = express()
 app.use(express.json())
  
-app.use("/student", studentRouter)
-app.use("/department", departmentRouter)
-app.use("/teacher", teacherRouter)
-app.use("/course", courseRouter)
+app.use("/students", studentRouter)
+app.use("/departments", departmentRouter)
+app.use("/teachers", teacherRouter)
+app.use("/courses", courseRouter)
 
 let PORT = process.env.PORT || 8888
 app.get("/", (req,res)=>{

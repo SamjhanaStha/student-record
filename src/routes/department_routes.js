@@ -1,6 +1,6 @@
 import { CreateDepartment, DeleteDepartment, FindAllDepartment, FindDepartmentById, UpdateDepartment } from "../handlers/department_handler.js";
-import router from "./routes.js";
-
+import { Router } from "express";
+let router = Router()
 router.get(
     "/", FindAllDepartment
 )

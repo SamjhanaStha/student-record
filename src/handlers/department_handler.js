@@ -2,7 +2,24 @@ import prisma from "../db/prisma.js"
 
 let FindAllDepartment = async(req, res) =>{
     try{
-        let allDepartment = await prisma.department.findMany()
+        let allDepartment = await prisma.department.findMany({
+            include:{
+                students: true,
+                teachers: true
+            }
+        })
+        [
+            {
+                id: 1,
+                name: "computer Science",
+                students: [
+                    {},{},
+                ],
+                teachers:[
+                    {},{}
+                ]
+            }
+        ]
         res.json({
             message: "all department found",
             data: allDepartment
@@ -50,7 +67,9 @@ let CreateDepartment = async(req, res) =>{
     try{
         let data = req.body
         let createDepartment = await prisma.department.create({
-            data: data
+            data: {
+                name: data.name,
+            }
         })
         res.status(201).json({
             message:"department created successfully",

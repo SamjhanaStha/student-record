@@ -32,10 +32,17 @@ let FindTeacherById = async (req, res) => {
 
 let CreateTeacher = async (req, res) => {
     try {
-        let data = req.body
-        
+        // let data = req.body
+        let {name, email, departmentId} = req.body
         let createTeacher = await prisma.teacher.create({
-            data: data
+            data: {
+                name,
+                email,
+                department:{
+                    connect: {id: Number(departmentId)}
+                }
+                
+            }
         })
         res.status(201).json({
             message: "teacher created successfully",

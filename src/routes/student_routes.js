@@ -1,6 +1,6 @@
 import { CreateStudent, DeleteStudent, FindAllStudents, FindStudentById, UpdateStudent } from "../handlers/handler.js"
-import router from "./routes.js"
-
+import { Router } from "express";
+let router = Router()
 router.get(
     "/", FindAllStudents
 )

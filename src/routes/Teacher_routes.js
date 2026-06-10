@@ -1,6 +1,6 @@
 import {  CreateTeacher, DeleteTeacher, FindAllTeachers, FindTeacherById, UpdateTeacher} from "../handlers/teacher_handler.js";
-import router from "./routes.js";
-
+import { Router } from "express";
+let router = Router()
 router.get(
     "/", FindAllTeachers
 )

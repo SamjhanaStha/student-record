@@ -1,5 +1,6 @@
 import { CreateCourse, DeleteCourse, FindAllCourse, FindCourseById, UpdateCourse } from "../handlers/course_handler.js";;
-import router from "./routes.js";
+import { Router } from "express";
+let router = Router()
 
 router.get(
     "/", FindAllCourse

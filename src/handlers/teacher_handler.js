@@ -1,96 +1,106 @@
 import prisma from "../db/prisma.js";
 
-let FindAllTeachers = async (req, res) => {
-    try {
-        let teachers = await prisma.teachers.findMany() 
+let FindAllTeacher = async(req, res) =>{
+     try{
+        let allTeacher = await prisma.teacher.findMany()
         res.json({
             message: "all teachers found",
-            data: teachers
+            data: allTeacher
         })
     } catch (e) {
         res.status(500).json({
-            error: "Something went wrong",      
-            stack: e?.message
+            error: "something went wrong",
+            stack: e?.message 
         })
     }
 }
-
-let FindTeacherById = async (req, res) => {
-    try {
-        let matchTeacher = await prisma.teachers.findUnique({   
-            where: {
-                id: Number(req.params.id),
-            }
-        })
-    } catch (e) {
-        res.status(500).json({
-            error: "Something went wrong",
-            stack: e?.message
-        })
-    }
-}
-
-let CreateTeacher = async (req, res) => {
-    try {
-        // let data = req.body
-        let {name, email, departmentId} = req.body
-        let createTeacher = await prisma.teacher.create({
-            data: {
-                name,
-                email,
-                department:{
-                    connect: {id: Number(departmentId)}
-                }
-                
+let FindTeacherById = async(req, res) =>{
+    try{
+        let id = req.params.id
+        if(id === ""){
+            res.status(400).json({
+                error: "id cannot be empty",
+            })
+            return
+        }
+        if (isNaN(id)){
+            res.status(400).json({
+                error: "id must be a number",
+            })
+            return
+        }
+        let matchTeacher = await prisma.teacher.findUnique({
+            where :{
+                id: Number(id)
             }
         })
         res.status(201).json({
-            message: "teacher created successfully",
-            data: createTeacher
+            message: "teacher Found",
+            data: matchTeacher
         })
-    } catch (e) {
+    }catch (e) {
         res.status(500).json({
             error: "Something went wrong",
             stack: e?.message
         })
     }
 }
-
-let UpdateTeacher = async (req, res) => {
-    try {
+let CreateTeacher = async(req, res) =>{
+    try{
+        let {name, credit, teacherId}= req.body
+        let createTeacher = await prisma.teacher.create({
+            data: {
+                name, 
+                credit, 
+                teacher: {connect:{
+                    id: teacherId
+                }}
+            }
+        })
+        res.status(201).json({
+            message:"teacher created successfully"
+        })
+    }catch (e) {
+        res.status(500).json({
+            error: "Something went wrong",
+            stack: e?.message
+        })
+    }
+}
+let UpdateTeacher = async(req, res) =>{
+    try{
         let id = req.params.id
         let data = req.body
-        let updatedTeacher = await prisma.teachers.update({
-            where: {
+        let updateTeacher = await prisma.teacher.update({
+            where:{
                 id: Number(id)
             },
             data: data
         })
-        res.status(200).json({
-            message: "teacher updated successfully",
-            data: updatedTeacher
+        res.status(201).json({
+            message: "teacher update successfully",
+            data: updateTeacher
         })
-    } catch (e) {
+    }catch (e) {
         res.status(500).json({
             error: "Something went wrong",
             stack: e?.message
         })
     }
 }
-
-let DeleteTeacher = async (req, res) => {
-    try {
-        let id = req.params.id
-        let deletedTeacher = await prisma.teachers.delete({
-            where: {
+let DeleteTeacher= async(req, res) =>{
+    try{
+        let id= req.params.id
+        let deleteTeacher = await prisma.teacher.delete({
+            where:{
                 id: Number(id)
             }
         })
-        res.status(200).json({
+        res.status(201).json({
             message: `Teacher with id ${id} deleted successfully.`,
-            data: deletedTeacher
+            data: deletedStudent
         })
-    } catch (e) {
+    }catch (e) {
         res.status(500).json({
             error: "Something went wrong",
             stack: e?.message
@@ -98,4 +108,4 @@ let DeleteTeacher = async (req, res) => {
     }
 }
 
-export {FindAllTeachers, FindTeacherById, CreateTeacher, UpdateTeacher, DeleteTeacher}
+export {FindAllTeacher, FindTeacherById, CreateTeacher, UpdateTeacher, DeleteTeacher}

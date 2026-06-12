@@ -2,7 +2,13 @@ import prisma from "../db/prisma.js"
 import { ValidateAllFieldTypes} from "../validators/field_validator.js"
 let FindAllStudents = async (req, res) => {
     try {
-        let allStudents = await prisma.students.findMany()
+        let allStudents = await prisma.students.findMany({
+            include: {
+                department: true,
+                enrollment: true
+            }
+        }
+        )
         res.json({
             message: "all students found",
             data: allStudents
@@ -34,6 +40,10 @@ let FindStudentById = async (req, res) => {
         let matchStudent = await prisma.students.findUnique({
             where: {
                 id: Number(req.params.id),
+            },
+            include: {
+                department: true,
+                enrollment: true
             }
         })
         res.status(200).json({
@@ -50,7 +60,7 @@ let FindStudentById = async (req, res) => {
 let CreateStudent = async (req, res) => {
     try {
         let data = req.body
-        let {email, name, roll_no} = data
+        let {email, name, rollNo, departmentId} = data
         let validateMsg = ValidateAllFieldTypes("email", email)
         if(validateMsg != null){
             res.status(400).json({
@@ -71,7 +81,7 @@ let CreateStudent = async (req, res) => {
                 email,
                 rollNo,
                 department:{
-                    connect:{id : Number(departmentID)}
+                    connect:{id : Number(departmentId)}
                 }
             }
         })
@@ -89,12 +99,19 @@ let CreateStudent = async (req, res) => {
 let UpdateStudent = async (req, res) => {
     try {
         let id = req.params.id
-        let data = req.body
+        let { name, email, rollNo, departmentId} = req.body
         let updatedStudent = await prisma.students.update({
             where: {
                 id: Number(id)
             },
-            data: data
+            data: {
+                name,
+                email,
+                rollNo,
+                department: {
+                    connect : {id : Number(departmentId)}
+                }
+            }
         })
         res.status(200).json({
             message: "student updated successfully",

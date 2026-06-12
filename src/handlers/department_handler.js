@@ -8,18 +8,7 @@ let FindAllDepartment = async(req, res) =>{
                 teachers: true
             }
         })
-        [
-            {
-                id: 1,
-                name: "computer Science",
-                students: [
-                    {},{},
-                ],
-                teachers:[
-                    {},{}
-                ]
-            }
-        ]
+         
         res.json({
             message: "all department found",
             data: allDepartment

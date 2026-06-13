@@ -39,6 +39,10 @@ let FindDepartmentById = async(req, res) =>{
         let matchdepartment = await prisma.department.findUnique({
             where:{
                 id: Number(id)
+            },
+            include: {
+                teachers : true,
+                students : true
             }
         })
         res.status(200).json({
@@ -52,8 +56,9 @@ let FindDepartmentById = async(req, res) =>{
         })
     }
 }
+
 let CreateDepartment = async(req, res) =>{
-    try{
+    try{ 
         let data = req.body
         let createDepartment = await prisma.department.create({
             data: {

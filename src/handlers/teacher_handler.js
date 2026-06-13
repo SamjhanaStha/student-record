@@ -2,7 +2,12 @@ import prisma from "../db/prisma.js";
 
 let FindAllTeacher = async(req, res) =>{
      try{
-        let allTeacher = await prisma.teacher.findMany()
+        let allTeacher = await prisma.teacher.findMany({
+            include:{
+                department: true,
+                courses : true
+            }
+        })
         res.json({
             message: "all teachers found",
             data: allTeacher
@@ -32,6 +37,10 @@ let FindTeacherById = async(req, res) =>{
         let matchTeacher = await prisma.teacher.findUnique({
             where :{
                 id: Number(id)
+            },
+            include:{
+                department: true,
+                courses : true
             }
         })
         res.status(201).json({
@@ -47,13 +56,13 @@ let FindTeacherById = async(req, res) =>{
 }
 let CreateTeacher = async(req, res) =>{
     try{
-        let {name, credit, teacherId}= req.body
+        let {name, email, departmentId}= req.body
         let createTeacher = await prisma.teacher.create({
             data: {
                 name, 
-                credit, 
-                teacher: {connect:{
-                    id: teacherId
+                email, 
+                department: {connect:{
+                    id: Number (departmentId)
                 }}
             }
         })
@@ -70,12 +79,15 @@ let CreateTeacher = async(req, res) =>{
 let UpdateTeacher = async(req, res) =>{
     try{
         let id = req.params.id
-        let data = req.body
+        let {name, email} = req.body
         let updateTeacher = await prisma.teacher.update({
             where:{
-                id: Number(id)
+                id : Number(id)
             },
-            data: data
+            data: {
+                name,
+                email
+            }
         })
         res.status(201).json({
             message: "teacher update successfully",
@@ -98,7 +110,7 @@ let DeleteTeacher= async(req, res) =>{
         })
         res.status(201).json({
             message: `Teacher with id ${id} deleted successfully.`,
-            data: deletedStudent
+            data: deleteTeacher
         })
     }catch (e) {
         res.status(500).json({

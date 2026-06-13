@@ -1,14 +1,25 @@
 import prisma from "../db/prisma.js"
-import { ValidateAllFieldTypes} from "../validators/field_validator.js"
+import { ValidateAllFieldTypes } from "../validators/field_validator.js"
 let FindAllStudents = async (req, res) => {
     try {
+        // select is used to specify which fields to retrieve from the database, while include is used to specifiy related models to include in the result.
+        // please either use 'select' or 'include', but not both at the same time
         let allStudents = await prisma.students.findMany({
+            // select: {
+            //     name: true, rollNo:true, id: true , email: true, enrollment: true, department: true
+            // },
             include: {
-                department: true,
-                enrollment: true
+                department: {select: { 
+                    name: true,
+                    id: true
+                }},
+                enrollment: {
+                    include: {
+                        course: true
+                    }
+                }
             }
-        }
-        )
+        })
         res.json({
             message: "all students found",
             data: allStudents
@@ -20,18 +31,67 @@ let FindAllStudents = async (req, res) => {
         })
     }
 }
+
+let getALlStudentsWithselect = async (req, res)=>{
+    try{
+        let students = await prisma.students.findMany({
+            select:{
+                name: true,
+                email: true,
+                id: true,
+                department:{
+                    select:{
+                        id: true,
+                        name: true,
+                    }
+                }
+            }
+        })
+        res.status(201).json({
+            message: "all students fetched successfully",
+            data: students
+        })
+    } catch (e) {
+        res.status(500).json({
+            error: "Something went wrong",
+            stack: e?.message
+        })
+    }
+}
+
+// example for orderby or sorting
+export let sortStudents = async(req, res)=>{
+    try{ 
+        let students = await prisma.students.findMany({
+            orderBy: {
+                name: "asc"
+            }
+        })
+        res.status(201).json({
+            message: "students sorted data",
+            data: students
+        })
+    } catch (e) {
+        res.status(500).json({
+            error: "Something went wrong",
+            stack: e?.message
+        })
+    }
+}
+
+// multi level include example
 let FindStudentById = async (req, res) => {
     try {
         let id = req.params.id
         // empty validation with bad request status
-        if (id === ""){
+        if (id === "") {
             res.status(400).json({
                 error: "id cannot be empty",
             })
             return
         }
         // check if id is number or not and must return status related to it
-        if (isNaN(id)){
+        if (isNaN(id)) {
             res.status(400).json({
                 error: "id must be a number",
             })
@@ -42,8 +102,15 @@ let FindStudentById = async (req, res) => {
                 id: Number(req.params.id),
             },
             include: {
-                department: true,
-                enrollment: true
+                department: {select: {
+                    name: true,
+                    id: true
+                }},
+                enrollment: {
+                    include: {
+                        course: true
+                    }
+                }
             }
         })
         res.status(200).json({
@@ -60,16 +127,16 @@ let FindStudentById = async (req, res) => {
 let CreateStudent = async (req, res) => {
     try {
         let data = req.body
-        let {email, name, rollNo, departmentId} = data
+        let { email, name, rollNo, departmentId } = data
         let validateMsg = ValidateAllFieldTypes("email", email)
-        if(validateMsg != null){
+        if (validateMsg != null) {
             res.status(400).json({
                 error: validateMsg
             })
             return
         }
         validateMsg = ValidateAllFieldTypes("name", name)
-        if(validateMsg != null){
+        if (validateMsg != null) {
             res.status(400).json({
                 error: validateMsg
             })
@@ -80,8 +147,8 @@ let CreateStudent = async (req, res) => {
                 name,
                 email,
                 rollNo,
-                department:{
-                    connect:{id : Number(departmentId)}
+                department: {
+                    connect: { id: Number(departmentId) }
                 }
             }
         })
@@ -96,10 +163,40 @@ let CreateStudent = async (req, res) => {
         })
     }
 }
+
+// prisma create example
+let CreateStudentWithDepartment = async (req, res) => {
+    try {
+        let { name, email, rollNo, departmentName } = req.body
+        let createStudentWithDepartment = await prisma.students.create({
+            data: {
+                name,
+                email,
+                rollNo,
+                department: {
+                    create: {
+                        name: departmentName
+                    }
+                }
+            }
+        })
+        res.status(201).json({
+            message: "Student created successfully",
+            data: createStudentWithDepartment
+        })
+    }
+    catch (e) {
+        res.status(500).json({
+            error: "cannot update student",
+            stack: e?.message
+        })
+    }
+}
+
 let UpdateStudent = async (req, res) => {
     try {
         let id = req.params.id
-        let { name, email, rollNo, departmentId} = req.body
+        let {name, email, rollNo} = req.body
         let updatedStudent = await prisma.students.update({
             where: {
                 id: Number(id)
@@ -107,10 +204,7 @@ let UpdateStudent = async (req, res) => {
             data: {
                 name,
                 email,
-                rollNo,
-                department: {
-                    connect : {id : Number(departmentId)}
-                }
+                rollNo
             }
         })
         res.status(200).json({
@@ -124,6 +218,7 @@ let UpdateStudent = async (req, res) => {
         })
     }
 }
+
 
 let DeleteStudent = async (req, res) => {
     try {
@@ -144,4 +239,7 @@ let DeleteStudent = async (req, res) => {
         })
     }
 }
-export { FindAllStudents, FindStudentById, CreateStudent, UpdateStudent, DeleteStudent }
+
+
+
+export { FindAllStudents,getALlStudentsWithselect, FindStudentById, CreateStudent, CreateStudentWithDepartment, UpdateStudent, DeleteStudent }

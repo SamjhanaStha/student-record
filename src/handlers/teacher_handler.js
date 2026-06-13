@@ -9,7 +9,7 @@ let FindAllTeacher = async(req, res) =>{
         })
     } catch (e) {
         res.status(500).json({
-            error: "something went wrong",
+            error: "something went wrong", 
             stack: e?.message 
         })
     }

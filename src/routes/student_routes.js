@@ -5,7 +5,7 @@ router.get(
     "/", FindAllStudents
 )
 router.get("/with-select", getALlStudentsWithselect)
-router.get("/:id", FindStudentById)
+router.get("/single/:id", FindStudentById)
 router.get("/sort", sortStudents)
 router.post("/",CreateStudent)
 router.post("/with-depart", CreateStudentWithDepartment)

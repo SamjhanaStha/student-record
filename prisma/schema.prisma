@@ -74,6 +74,8 @@ model Enrollment{
   student Students @relation(fields: [studentId], references: [id])
   courseId Int @map("course_id")
   course Course @relation(fields: [courseId], references: [id])
-  enrollAt DateTime @default(now()) @map("enroll_at")
+  enrolledAt DateTime @default(now()) @map("enrolled_at")
+  @@unique([studentId, courseId])
+  status String @default("Active")
   @@map("enrollments")
 } 

@@ -61,7 +61,8 @@ CREATE TABLE "enrollments" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "student_id" INTEGER NOT NULL,
     "course_id" INTEGER NOT NULL,
-    "enroll_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "enrolled_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" TEXT NOT NULL DEFAULT 'Active',
 
     CONSTRAINT "enrollments_pkey" PRIMARY KEY ("id")
 );
@@ -77,6 +78,9 @@ CREATE UNIQUE INDEX "teachers_email_key" ON "teachers"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "courses_name_key" ON "courses"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "enrollments_student_id_course_id_key" ON "enrollments"("student_id", "course_id");
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_department_id_fkey" FOREIGN KEY ("department_id") REFERENCES "departments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

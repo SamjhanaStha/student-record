@@ -20,6 +20,12 @@ DATABASE_URL = "postgresql://user:password@host:port/databaseName?schema=public"
 # Prisma Setup Steps
 - npx prisma init
 - npx prisma migrate dev --name create_students_table
+
+# if already migrate the use this
+- npx prisma db push 
+    ## then use generate
+    - npx prisma code generate
+
 ### to visualize the database tables
 - npx prisma studio 
 

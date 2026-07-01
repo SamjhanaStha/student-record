@@ -1,5 +1,7 @@
+import {z} from "zod"
 import prisma from "../db/prisma.js"
-import { ValidateAllFieldTypes } from "../validators/field_validator.js"
+import { createStudentValidatorSchema, updateStudentValidatorSchema } from "../validators/validator.js"
+// import { ValidateAllFieldTypes } from "../validators/field_validator.js"
 let FindAllStudents = async (req, res) => {
     try {
         // select is used to specify which fields to retrieve from the database, while include is used to specifiy related models to include in the result.
@@ -124,24 +126,41 @@ let FindStudentById = async (req, res) => {
         })
     }
 }
-let CreateStudent = async (req, res) => {
-    try {
+let CreateStudent = async (req, res, next) => {
+    // try {
+        // parsing body data using zod validator schema
+        let result = createStudentValidatorSchema.safeParse(req.body)
+        console.log("result:", result)
+
+        if(!result.success){
+            let errors = result.error.issues.map((ele)=>{
+                return{
+                    field: ele.path[0],
+                    message: ele.message
+                }
+            })
+            res.status(400).json({
+                message: "something went wrong",
+                errors: errors
+            })
+        }
+
         let data = req.body
         let { email, name, rollNo, departmentId } = data
-        let validateMsg = ValidateAllFieldTypes("email", email)
-        if (validateMsg != null) {
-            res.status(400).json({
-                error: validateMsg
-            })
-            return
-        }
-        validateMsg = ValidateAllFieldTypes("name", name)
-        if (validateMsg != null) {
-            res.status(400).json({
-                error: validateMsg
-            })
-            return
-        }
+        // let validateMsg = ValidateAllFieldTypes("email", email)
+        // if (validateMsg != null) {
+        //     res.status(400).json({
+        //         error: validateMsg
+        //     })
+        //     return
+        // }
+        // validateMsg = ValidateAllFieldTypes("name", name)
+        // if (validateMsg != null) {
+        //     res.status(400).json({
+        //         error: validateMsg
+        //     })
+        //     return
+        // }
         let createdStudent = await prisma.students.create({
             data: {
                 name,
@@ -156,12 +175,12 @@ let CreateStudent = async (req, res) => {
             message: "student created successfully",
             data: createdStudent
         })
-    } catch (e) {
-        res.status(500).json({
-            error: "Something went wrong",
-            stack: e?.message
-        })
-    }
+    // } catch (e) {
+    //     res.status(500).json({
+    //         error: "Something went wrong",
+    //         stack: e?.message
+    //     })
+    // }
 }
 
 // prisma create example
@@ -196,6 +215,7 @@ let CreateStudentWithDepartment = async (req, res) => {
 let UpdateStudent = async (req, res) => {
     try {
         let id = req.params.id
+        updateStudentValidatorSchema.parse(req.body)
         let {name, email, rollNo} = req.body
         let updatedStudent = await prisma.students.update({
             where: {
@@ -212,10 +232,19 @@ let UpdateStudent = async (req, res) => {
             data: updatedStudent
         })
     } catch (e) {
-        res.status(500).json({
-            error: "cannot update student",
-            stack: e?.message
-        })
+        if(e instanceof z.ZodError){
+            let errors = e.issues.map((ele)=>{
+                return{
+                    field: ele.path[0],
+                    message: ele.message
+                }
+            })
+            res.status(500).json({
+                message: "cannot update student/ validation error",
+                errors: errors,
+                stack: e?.message
+            })
+        }
     }
 }
 

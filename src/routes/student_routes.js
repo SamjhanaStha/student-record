@@ -1,8 +1,9 @@
 import { CreateStudent, CreateStudentWithDepartment, DeleteStudent, FindAllStudents, FindStudentById, getALlStudentsWithselect, sortStudents, UpdateStudent } from "../handlers/handler.js"
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 let router = Router()
 router.get(
-    "/", FindAllStudents
+    "/", authMiddleware, FindAllStudents
 )
 router.get("/with-select", getALlStudentsWithselect)
 router.get("/single/:id", FindStudentById)

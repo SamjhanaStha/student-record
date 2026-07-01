@@ -28,8 +28,7 @@ model Students{
   // one student may have multiple courses enrollment
   enrollment Enrollment[]
   // table nmae change
-  @@map("students")
-  
+  @@map("students") 
 }
 
 model Department{
@@ -78,4 +77,15 @@ model Enrollment{
   @@unique([studentId, courseId])
   status String @default("Active")
   @@map("enrollments")
-} 
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  username String @unique
+  email String @unique
+  password String //store hashed password, never atore the plain text password
+  role String @default("user") //can be "user" or "admin"
+  @@map("users")
+}

@@ -1,8 +1,9 @@
 import { CreateDepartment, DeleteDepartment, FindAllDepartment, FindDepartmentById, UpdateDepartment } from "../handlers/department_handler.js";
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 let router = Router()
 router.get(
-    "/", FindAllDepartment
+    "/",authMiddleware, FindAllDepartment
 )
 
 router.get(
@@ -10,11 +11,11 @@ router.get(
 )
 
 router.post(
-    "/", CreateDepartment
+    "/",authMiddleware, CreateDepartment
 )
 
 router.put(
-    "/:id", UpdateDepartment
+    "/:id", authMiddleware, UpdateDepartment
 )
 
 router.delete(

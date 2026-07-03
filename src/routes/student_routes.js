@@ -2,15 +2,13 @@ import { CreateStudent, CreateStudentWithDepartment, DeleteStudent, FindAllStude
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth_middleware.js";
 let router = Router()
-router.get(
-    "/", authMiddleware, FindAllStudents
-)
+router.get("/", authMiddleware, FindAllStudents)
 router.get("/with-select", getALlStudentsWithselect)
 router.get("/single/:id", FindStudentById)
 router.get("/sort", sortStudents)
-router.post("/",CreateStudent)
+router.post("/", authMiddleware, CreateStudent)
 router.post("/with-depart", CreateStudentWithDepartment)
-router.put("/:id", UpdateStudent)
+router.put("/:id",authMiddleware, UpdateStudent)
 router.delete("/:id", DeleteStudent)
 
 export default router

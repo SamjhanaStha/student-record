@@ -1,8 +1,9 @@
 import { CreateTeacher, DeleteTeacher, FindAllTeacher, FindTeacherById, UpdateTeacher } from "../handlers/teacher_handler.js";
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 let router = Router()
 router.get(
-    "/", FindAllTeacher
+    "/", authMiddleware, FindAllTeacher
 )
 
 router.get(
@@ -10,11 +11,11 @@ router.get(
 )
 
 router.post(
-    "/", CreateTeacher
+    "/",authMiddleware, CreateTeacher
 )
 
 router.put(
-    "/:id", UpdateTeacher
+    "/:id",authMiddleware, UpdateTeacher
 )
 
 router.delete(

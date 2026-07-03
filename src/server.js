@@ -8,10 +8,14 @@ import enrollmentRouter from "./routes/enrollment_routes.js"
 import hashRouter from "./routes/auth_routes.js"
 import { checkXApiKeyInHeader, checkXRoleHeaderMiddleware } from "./middlewares/header_middlerware.js"
 import { addRequestTimeStampMiddleware, customErrorMiddleware, customSuccessMiddleware } from "./middlewares/add_request_timestamp_middleware.js"
+import { upload } from "./middlewares/upload_middleware.js"
+import { uploadFileHandler } from "./handlers/upload_handler.js"
 // github.com/DipakShrestha-ADS/student_record.git
 dotenv.config()
 let app = express()
 app.use(express.json())
+
+app.post("/uploads", upload.single("file"), uploadFileHandler)
 
 // roure-based middleware
 app.use("/req-time", addRequestTimeStampMiddleware, (req, res)=>{

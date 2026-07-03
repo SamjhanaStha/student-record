@@ -1,9 +1,10 @@
 import { CreateCourse, DeleteCourse, FindAllCourse, FindCourseById, UpdateCourse } from "../handlers/course_handler.js";;
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 let router = Router()
 
 router.get(
-    "/", FindAllCourse
+    "/",authMiddleware, FindAllCourse
 )
 
 router.get(
@@ -11,11 +12,11 @@ router.get(
 )
 
 router.post(
-    "/", CreateCourse
+    "/",authMiddleware, CreateCourse
 )
 
 router.put(
-    "/:id", UpdateCourse
+    "/:id", authMiddleware, UpdateCourse
 )
 
 router.delete(

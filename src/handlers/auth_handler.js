@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import prisma from "../db/prisma.js"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { success } from "zod"
 dotenv.config()
 
 // let SECRET_KEY = process.env.SECRET_KEY
@@ -124,6 +125,59 @@ export let login = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "something went wrong on login",
+            stack: e?.message
+        })
+    }
+}
+
+export let getProfileHandler = async(req, res)=>{
+        let id = req.payload.id
+    try{
+        let user = await prisma.user.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+        res.status(200).json({
+            success: true,
+            message: "user profile fetched successfully",
+            data: user
+        })
+    } catch(e){
+        res.status(500).json({
+            success: false,
+            message: "something went wrong",
+            stack: e?.message
+        })
+    }
+}
+
+export let updateProfileHandler = async(req, res)=>{
+    let id = req.payload.id
+    // todo add zod validation
+    let {email, role, username} = req.body
+    let profileUrl = `/uploads/${req.file.filename}`
+    try{
+        let updatedDate = await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                email,
+                role,
+                username,
+                profileImage: profileUrl
+            }
+        })
+        res.status(200).json({
+            success: true,
+            message: "user profile updated successfully",
+            data: updatedDate
+        })
+    }catch(e){
+        res.status(500).json({
+            success: false,
+            message: "error in uploading profile",
             stack: e?.message
         })
     }

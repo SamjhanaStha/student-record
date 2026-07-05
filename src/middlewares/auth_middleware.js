@@ -7,6 +7,7 @@
 
 // import { success } from "zod"
 import jwt from "jsonwebtoken"
+import { email } from "zod"
 
 export let authMiddleware = async (req, res, next)=>{
     let authHeader = req.headers.authorization
@@ -34,11 +35,15 @@ export let authMiddleware = async (req, res, next)=>{
     }
     try{
         // verify the token or validate the token
-        let decodedDataFromToken = await jwt.verify(token, process.env.SECRET_KEY)
+        let decodedDataFromToken = jwt.verify(token, process.env.SECRET_KEY)
         // let exp = decodedDataFromToken.exp
         
         // attach user data or payload in req for further use
-        req.payload =decodedDataFromToken.payload
+        req.payload = {
+            id: decodedDataFromToken.id,
+            email: decodedDataFromToken.email,
+            role: decodedDataFromToken.role
+        }
         next()
     }catch(e){
         console.log("error: ", e.name)

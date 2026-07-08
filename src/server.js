@@ -9,13 +9,22 @@ import hashRouter from "./routes/auth_routes.js"
 import { checkXApiKeyInHeader, checkXRoleHeaderMiddleware } from "./middlewares/header_middlerware.js"
 import { addRequestTimeStampMiddleware, customErrorMiddleware, customSuccessMiddleware } from "./middlewares/add_request_timestamp_middleware.js"
 import { upload } from "./middlewares/upload_middleware.js"
-import { uploadFileHandler } from "./handlers/upload_handler.js"
+import { uploadFileHandler, uploadMultipleFiles } from "./handlers/upload_handler.js"
+import path from "path"
+import { fileURLToPath } from "url"
 // github.com/DipakShrestha-ADS/student_record.git
+
 dotenv.config()
 let app = express()
 app.use(express.json())
 
-app.post("/uploads", upload.single("file"), uploadFileHandler)
+const fileNamePath = fileURLToPath(import.meta.url)
+const dirPath = path.dirname(fileNamePath)
+
+app.use("/uploads", express.static(path.join(dirPath, "/uploads")))
+
+app.post("/uploads-file", upload.single("file"), uploadFileHandler)
+app.post("/uploads-multi-file", upload.array("files", 5), uploadMultipleFiles)
 
 // roure-based middleware
 app.use("/req-time", addRequestTimeStampMiddleware, (req, res)=>{

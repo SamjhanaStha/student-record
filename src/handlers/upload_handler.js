@@ -1,3 +1,5 @@
+import { size, success } from "zod"
+
 export let uploadFileHandler = (req, res) => {
     try {
         console.log('upload handler req.file ->', req.file)
@@ -25,4 +27,25 @@ export let uploadFileHandler = (req, res) => {
             stack: error?.message
         })
     }
+}
+
+export let uploadMultipleFiles = (req, res)=>{
+    if(!req.files || req.files.length === 0){
+        return res.status(400).json({
+            success: false,
+            message: "no files uploads"
+        })
+    }
+    let files = req.files.map((fi)=>{
+        return {
+            filename: fi.filename,
+            size: fi.size,
+            mimetype: fi.mimetype,
+            upload_path: `/uploads/${fi.filename}`
+        }
+    })
+    res.status(200).json({
+        success: true,
+        data: files,
+    })
 }

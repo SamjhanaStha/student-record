@@ -7,6 +7,6 @@ let router = Router()
 router.post("/register", registerUserHandler)
 router.post("/login", login)
 router.get("/profile", authMiddleware,  getProfileHandler)
-router.post("/update-profile", authMiddleware, upload.single("profileImage"), updateProfileHandler)
+router.put("/update-profile", authMiddleware, upload.single("profileImage"), updateProfileHandler)
 
 export default router

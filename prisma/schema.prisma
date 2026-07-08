@@ -27,8 +27,30 @@ model Students{
   department Department  @relation(fields: [departmentId], references: [id])
   // one student may have multiple courses enrollment
   enrollment Enrollment[]
-  // table nmae change
+  // one student may have multiple uploaded files
+  uploadedFileInfo UploadedFileInfo[]
+  //make separate route named "upload-student-docs"
+  docs String[] @map("documents") 
+  docsDetails Json? @db.JsonB
+  //make seperate route named "upload-student-card"
+  studentCard String? @map("student_card")
+  studentCardDetails Json? @db.JsonB
+  // table name change
   @@map("students") 
+}
+
+// Todo: if possible store the information of uploaded files (like real file name, size, type, and modified file name) for both docs (for each element or doc) and student Card : jsonb
+model UploadedFileInfo {
+  id Int @id @default(autoincrement())
+  fileName String
+  fileSize Int
+  fileType String
+  modifiedFileName String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  studentId Int? @map("student_id")
+  student Students? @relation(fields: [studentId], references: [id])
+  @@map("uploaded_file_info")
 }
 
 model Department{
